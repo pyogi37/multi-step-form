@@ -1,13 +1,21 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./App.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { Box, ChakraProvider } from "@chakra-ui/react";
+import { UserProvider } from "./context/UserContext";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <App />
+    <ChakraProvider>
+      <UserProvider>
+        <Box w={"100vw"} h={"100vh"} bgColor={"bisque"}>
+          <App />
+        </Box>
+      </UserProvider>
+    </ChakraProvider>
   </React.StrictMode>
 );
 

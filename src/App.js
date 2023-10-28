@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import SideBar from "./components/Sidebar";
+import "./App.css";
 
-function App() {
+import { Box, Center } from "@chakra-ui/react";
+import PersonalInfoForm from "./components/PersonalInfoForm";
+import PlanForm from "./components/PlanForm";
+import AddonsForm from "./components/AddonsForm";
+import Summary from "./components/Summary";
+import { useContext } from "react";
+import { useUserContext } from "./context/UserContext";
+
+const App = () => {
+  const { user } = useUserContext();
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Center>
+      <Box
+        display={"flex"}
+        mt={"5vh"}
+        h={"90vh"}
+        w={"70vw"}
+        bgColor={"white"}
+        borderRadius={"2xl"}
+        p={2}
+      >
+        <SideBar />
+        {user.currentPage === 1 && <PersonalInfoForm />}
+        {user.currentPage === 2 && <PlanForm />}
+        {user.currentPage === 3 && <AddonsForm />}
+        {user.currentPage === 4 && <Summary />}
+      </Box>
+    </Center>
   );
-}
+};
 
 export default App;
