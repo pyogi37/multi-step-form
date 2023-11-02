@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useEffect } from "react";
 import {
   FormControl,
   FormLabel,
@@ -10,19 +10,14 @@ import {
   HStack,
   Checkbox,
 } from "@chakra-ui/react";
-import { useUserContext } from "../context/UserContext"; // Import your UserContext
+import { useUserContext } from "../context/UserContext";
 
 const AddonsForm = () => {
   const title = "Pick add-ons";
   const info = "Add-ons help enhance your gaming experience";
 
-  // Access the user context and the setUser function
   const { user, setUser } = useUserContext();
 
-  // State to keep track of selected checkboxes and addon services
-  const [selectedAddons, setSelectedAddons] = useState({});
-
-  // Define the addon services and their corresponding prices
   const addonServices = [
     {
       name: "Online Services",
@@ -41,69 +36,46 @@ const AddonsForm = () => {
     },
   ];
 
-  // Function to update selected addons and calculate the total price
-  const handleAddonSelect = (addonIndex, checked) => {
-    setSelectedAddons({
-      ...selectedAddons,
-      [addonIndex]: checked,
-    });
-  };
-
-  // Function to calculate the total price of selected addons
-  const calculateTotalPrice = () => {
-    let totalPrice = 0;
-    for (const index in selectedAddons) {
-      if (selectedAddons[index]) {
-        totalPrice += addonServices[index].price;
-      }
-    }
-    return totalPrice;
-  };
-
   const handleGoBack = () => {
-    // Handle the "Go Back" action if needed
-    // You can decrease the currentPage or navigate to a previous step
-    // For simplicity, we're just going back to the previous step here
+    // Save the selected addons in local storage when navigating away
+    localStorage.setItem("selectedAddons", JSON.stringify(user.addOnServices));
     setUser({ ...user, currentPage: user.currentPage - 1 });
   };
 
   const handleNextStep = () => {
-    // Update the user's addonServices and totalPrice in the user context
-    const updatedUser = {
-      ...user,
-      addonServices: addonServices.map((addon, index) => ({
-        ...addon,
-        selected: selectedAddons[index],
-      })),
-      totalPrice: calculateTotalPrice(),
-    };
-
-    // Update the user context with the updated user data
-    setUser(updatedUser);
-
-    // Handle the "Next Step" action if needed
-    // You can increase the currentPage or navigate to the next step
-    // For simplicity, we're just going to the next step here
     setUser({ ...user, currentPage: user.currentPage + 1 });
   };
 
+  useEffect(() => {
+    // Check if there are previously selected addons in local storage
+    const storedAddons =
+      JSON.parse(localStorage.getItem("selectedAddons")) || [];
+    setUser({ ...user, addOnServices: storedAddons });
+  }, []); // Run this effect only when the component mounts
+
+  // Function to handle checkbox changes
+  const handleAddonServiceChange = (addon, isChecked) => {
+    if (isChecked) {
+      const updatedAddons = [...user.addOnServices, addon];
+      setUser({ ...user, addOnServices: updatedAddons });
+    } else {
+      const updatedAddons = user.addOnServices.filter((a) => a !== addon);
+      setUser({ ...user, addOnServices: updatedAddons });
+    }
+  };
+
   return (
-    <Box p={6} borderRadius="md" w={"70%"} h={"100%"} centerContent>
-      {/* Form Title */}
+    <Box p={6} borderRadius="md" w={"70%"} h={"100%"}>
       <Box mb={2}>
         <Text color={"hsl(213, 96%, 18%)"} fontWeight={700} fontSize={"24px"}>
           {title}
         </Text>
       </Box>
-
-      {/* Form Information */}
       <Box mb={4}>
         <Text color={"hsl(231, 11%, 63%)"} fontWeight={400} fontSize={"16px"}>
           {info}
         </Text>
       </Box>
-
-      {/* Form Body */}
       <VStack>
         {addonServices.map((addon, index) => (
           <Box
@@ -118,8 +90,9 @@ const AddonsForm = () => {
             justifyContent={"space-around"}
           >
             <Checkbox
-              isChecked={selectedAddons[index]}
-              onChange={(e) => handleAddonSelect(index, e.target.checked)}
+              onChange={(e) =>
+                handleAddonServiceChange(addon, e.target.checked)
+              }
             />
             <Box>
               <Text fontWeight={500}>{addon.name}</Text>
@@ -129,14 +102,10 @@ const AddonsForm = () => {
           </Box>
         ))}
       </VStack>
-
       <Box display={"flex"} justifyContent={"space-between"} mt={6}>
-        {/* Go Back Step Button */}
         <Button size="sm" textColor={"white"} onClick={handleGoBack}>
           Go Back
         </Button>
-
-        {/* Next Step Button */}
         <Button
           bgColor="hsl(213, 96%, 18%)"
           size="sm"

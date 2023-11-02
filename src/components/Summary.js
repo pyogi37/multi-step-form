@@ -14,11 +14,24 @@ const Summary = () => {
   };
 
   const handleNextStep = () => {
-    setUser({ ...user, currentPage: user.currentPage + 1 });
+    // setUser({ ...user, currentPage: user.currentPage + 1 });
+    console.log(user);
+  };
+
+  const calculateTotalPrice = () => {
+    // Calculate the total price based on the selected plan charge and add-on service prices
+    const planCharge = parseFloat(
+      user.selectedPlanCharge.replace("$", "").replace("/mo", "")
+    );
+    const addonServiceTotal = user.addOnServices.reduce(
+      (total, addon) => total + addon.price,
+      0
+    );
+    return planCharge + addonServiceTotal; // Format the result to two decimal places
   };
 
   return (
-    <Box p={6} borderRadius="md" w={"70%"} h={"100%"} centerContent>
+    <Box p={6} borderRadius="md" w={"70%"} h={"100%"}>
       {/* Form Title */}
       <Box mb={2}>
         <Text color={"hsl(213, 96%, 18%)"} fontWeight={700} fontSize={"24px"}>
@@ -41,22 +54,25 @@ const Summary = () => {
         >{`Plan Charge: ${user.selectedPlanCharge}`}</Text>
       </Box>
 
-      {/* <Box w="100%">
-        <Text fontWeight={600}>Selected Add-ons:</Text>
-        <ul>
-          {user.addonServices
-            .filter((addon) => addon.selected)
-            .map((addon) => (
-              <li key={addon.name}>
-                {addon.name}: +${addon.price}/mo
+      {user.addOnServices.length > 0 && (
+        <Box w="100%" mb={4}>
+          <Text fontWeight={600}>Selected Add-ons:</Text>
+          <ul>
+            {user.addOnServices.map((addon) => (
+              <li key={addon.name} style={{ listStyleType: "none" }}>
+                <Text fontWeight={400}>
+                  {addon.name}: +${addon.price}/mo{" "}
+                </Text>
               </li>
             ))}
-        </ul>
-      </Box> */}
+          </ul>
+        </Box>
+      )}
 
-      <Box w="100%" mt={2}>
-        <Text fontWeight={600}>Total Price:</Text>
-        <Text>{`$${user.totalPrice}/mo`}</Text>
+      <Box w="100%" mt={4}>
+        <Text fontWeight={600}>
+          Total Price: {`$${calculateTotalPrice()}/mo`}
+        </Text>
       </Box>
 
       <Box display={"flex"} justifyContent={"space-between"} mt={6}>

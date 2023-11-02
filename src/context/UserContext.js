@@ -12,8 +12,8 @@ export function UserProvider({ children }) {
     email: "",
     phoneNumber: "",
     selectedPlan: "",
-    mainPlanCharge: 0,
-    addOnServices: [{}],
+    selectedPlanCharge: 0,
+    addOnServices: [],
     currentPage: 1,
   });
 
